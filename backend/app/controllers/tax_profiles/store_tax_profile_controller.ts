@@ -8,6 +8,6 @@ export default class StoreTaxProfileController {
     const payload = await request.validateUsing(storeTaxProfilenValidator);
     const taxProfile = await TaxProfile.create(payload);
 
-    response.sendResponse(taxProfile.serialize, 'Perfil fiscal creado.', 201);
+    response.sendResponse(taxProfile.serialize(), 'Perfil fiscal creado.', 201);
   }
 }

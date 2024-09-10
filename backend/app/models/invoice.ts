@@ -1,9 +1,17 @@
-import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm';
-import { type BelongsTo } from '@adonisjs/lucid/types/relations';
+import { BaseModel, belongsTo, column, hasMany } from '@adonisjs/lucid/orm';
+import { type BelongsTo, type HasMany } from '@adonisjs/lucid/types/relations';
 import { XmlNodeInterface } from '@nodecfdi/cfdi-core/types';
 import { DateTime } from 'luxon';
+import Concept from '#models/concept';
 import TaxProfile from '#models/tax_profile';
-import cfdiNs from '../constants/cfdi_ns.js';
+import {
+  getNsValues,
+  obtainComprobanteNodeData,
+  obtainConceptNodeData,
+  obtainIssuerNodeData,
+  obtainReceiverNodeData,
+  obtainTimbreNodeData,
+} from './helpers/node_to:values.js';
 
 export default class Invoice extends BaseModel {
   @column({ isPrimary: true })
@@ -63,6 +71,9 @@ export default class Invoice extends BaseModel {
   @belongsTo(() => TaxProfile)
   public declare taxProfile: BelongsTo<typeof TaxProfile>;
 
+  @hasMany(() => Concept)
+  public declare invoices: HasMany<typeof Concept>;
+
   @column.dateTime({ autoCreate: true })
   public declare createdAt: DateTime;
 
@@ -70,30 +81,23 @@ export default class Invoice extends BaseModel {
   public declare updatedAt: DateTime;
 
   public static async createInvoiceFromXmlNode(node: XmlNodeInterface): Promise<Invoice | null> {
-    let ns0 = null;
-    let ns1 = null;
-    for (const entry of node.attributes().entries()) {
-      if (ns0 === null) {
-        ns0 = entry[1] === cfdiNs.cfdi ? entry[0] : null;
-      }
-      if (ns1 === null) {
-        ns1 = entry[1] === cfdiNs.tfd ? entry[0] : null;
-      }
-      if (ns0 !== null && ns1 !== null) {
-        ns0 = ns0.split(':')[1];
-        ns1 = ns1.split(':')[1];
-        break;
-      }
+    const ns = getNsValues(node);
+    if (ns.cfdiNs === null || ns.tfdNs === null) {
+      return null;
     }
 
-    const issuerNode = node.searchNode(`${ns0}:Emisor`);
-    const rfcEmisor = issuerNode!.getAttribute('Rfc');
-    const nombreEmisor = issuerNode!.getAttribute('Nombre');
+    const issuerNode = node.searchNode(`${ns.cfdiNs}:Emisor`);
+    if (issuerNode === undefined) {
+      return null;
+    }
+    const { rfcEmisor, nombreEmisor } = obtainIssuerNodeData(issuerNode);
     let taxProfile = await TaxProfile.query().where('rfc', rfcEmisor).first();
 
-    const receiverNode = node.searchNode(`${ns0}:Emisor`);
-    const rfcReceptor = receiverNode!.getAttribute('Rfc');
-    const nombreReceptor = receiverNode!.getAttribute('Nombre');
+    const receiverNode = node.searchNode(`${ns.cfdiNs}:Emisor`);
+    if (receiverNode === undefined) {
+      return null;
+    }
+    const { rfcReceptor, nombreReceptor } = obtainReceiverNodeData(receiverNode);
 
     if (taxProfile === null) {
       taxProfile = await TaxProfile.query().where('rfc', rfcReceptor).first();
@@ -102,41 +106,59 @@ export default class Invoice extends BaseModel {
       return null;
     }
 
-    const fecha = node.searchAttribute('Fecha');
-    const tipoComprobante = node.searchAttribute('TipoDeComprobante');
-    const total = Number(node.searchAttribute('Total'));
-    const subtotal = Number(node.searchAttribute('Subtotal'));
-    const descuento = Number(node.searchAttribute('Descuento'));
-    const formaPago = node.searchAttribute('FormaPago');
-    const metodoPago = node.searchAttribute('MetodoPago');
-    const serie = node.searchAttribute('Serie');
-    const folio = node.searchAttribute('Folio');
-    const lugarExpedicion = node.searchAttribute('LugarExpedicion');
+    const comprobanteData = obtainComprobanteNodeData(node);
 
-    const complementNode = node.searchNode(`${ns0}:Complemento`);
+    const complementNode = node.searchNode(`${ns.cfdiNs}:Complemento`);
 
-    const timbreNode = complementNode?.searchNode(`${ns1}:TimbreFiscalDigital`);
-    const uuid = timbreNode?.getAttribute('UUID');
-    const fechaSellado = timbreNode?.getAttribute('FechaTimbrado');
+    const timbreNode = complementNode?.searchNode(`${ns.tfdNs}:TimbreFiscalDigital`);
+    if (timbreNode === undefined) {
+      return null;
+    }
+    const { uuid, fechaSellado } = obtainTimbreNodeData(timbreNode);
 
-    return await Invoice.create({
+    const invoice = await Invoice.create({
       rfcEmisor,
       nombreEmisor,
       rfcReceptor,
       nombreReceptor,
-      fecha: DateTime.fromISO(fecha),
-      tipoComprobante,
-      total,
-      subtotal,
-      descuento,
-      formaPago,
-      metodoPago,
-      serie,
-      folio,
-      lugarExpedicion,
+      fecha: comprobanteData.fecha,
+      tipoComprobante: comprobanteData.tipoComprobante,
+      total: comprobanteData.total,
+      subtotal: comprobanteData.subtotal,
+      descuento: comprobanteData.descuento,
+      formaPago: comprobanteData.formaPago,
+      metodoPago: comprobanteData.metodoPago,
+      serie: comprobanteData.serie,
+      folio: comprobanteData.folio,
+      lugarExpedicion: comprobanteData.lugarExpedicion,
       uuid,
-      fechaSellado: fechaSellado === undefined ? null : DateTime.fromISO(fechaSellado),
+      fechaSellado,
       taxProfileId: taxProfile.id,
     });
+
+    const conceptsNode = node.searchNode(`${ns.cfdiNs}:Conceptos`);
+
+    if (conceptsNode === undefined) {
+      return invoice;
+    }
+    await invoice.createConcepts(conceptsNode, ns.cfdiNs);
+
+    return invoice;
+  }
+
+  public async createConcepts(node: XmlNodeInterface, nsName: string): Promise<Concept[]> {
+    const conceptNodeArr = node.searchNodes(`${nsName}:Concepto`);
+    const conceptsCreated: Concept[] = [];
+    for (const conceptNode of conceptNodeArr) {
+      const conceptCreated = await Concept.create({ invoiceId: this.id, ...obtainConceptNodeData(conceptNode) });
+      const taxesNode = conceptNode.searchNode(`${nsName}:Impuestos`);
+
+      if (taxesNode !== undefined) {
+        await conceptCreated.createTaxes(taxesNode, nsName);
+      }
+      conceptsCreated.push(conceptCreated);
+    }
+
+    return conceptsCreated;
   }
 }

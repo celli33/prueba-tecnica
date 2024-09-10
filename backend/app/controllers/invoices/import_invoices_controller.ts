@@ -36,7 +36,7 @@ export default class ImportInvoicesController {
         }
       }
 
-      response.sendResponse({}, 'Facturas procesadas.', 201);
+      response.sendResponse(invoices, 'Facturas procesadas.', 201);
     } catch (error) {
       logger.error(error);
 

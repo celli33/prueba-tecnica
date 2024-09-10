@@ -3,15 +3,17 @@ import { type BelongsTo, type HasMany } from '@adonisjs/lucid/types/relations';
 import { XmlNodeInterface } from '@nodecfdi/cfdi-core/types';
 import { DateTime } from 'luxon';
 import Concept from '#models/concept';
+import PaymentTotal from '#models/payment_total';
 import TaxProfile from '#models/tax_profile';
 import {
   getNsValues,
   obtainComprobanteNodeData,
   obtainConceptNodeData,
   obtainIssuerNodeData,
+  obtainPaymentTotalsNodeData,
   obtainReceiverNodeData,
   obtainTimbreNodeData,
-} from './helpers/node_to:values.js';
+} from './helpers/node_to_values.js';
 
 export default class Invoice extends BaseModel {
   @column({ isPrimary: true })
@@ -86,6 +88,14 @@ export default class Invoice extends BaseModel {
       return null;
     }
 
+    const complementNode = node.searchNode(`${ns.cfdiNs}:Complemento`);
+    const timbreNode = complementNode?.searchNode(`${ns.tfdNs}:TimbreFiscalDigital`);
+    if (timbreNode === undefined) {
+      return null;
+    }
+    const { uuid, fechaSellado } = obtainTimbreNodeData(timbreNode);
+    await Invoice.query().where('uuid', uuid).delete();
+
     const issuerNode = node.searchNode(`${ns.cfdiNs}:Emisor`);
     if (issuerNode === undefined) {
       return null;
@@ -93,7 +103,7 @@ export default class Invoice extends BaseModel {
     const { rfcEmisor, nombreEmisor } = obtainIssuerNodeData(issuerNode);
     let taxProfile = await TaxProfile.query().where('rfc', rfcEmisor).first();
 
-    const receiverNode = node.searchNode(`${ns.cfdiNs}:Emisor`);
+    const receiverNode = node.searchNode(`${ns.cfdiNs}:Receptor`);
     if (receiverNode === undefined) {
       return null;
     }
@@ -107,14 +117,6 @@ export default class Invoice extends BaseModel {
     }
 
     const comprobanteData = obtainComprobanteNodeData(node);
-
-    const complementNode = node.searchNode(`${ns.cfdiNs}:Complemento`);
-
-    const timbreNode = complementNode?.searchNode(`${ns.tfdNs}:TimbreFiscalDigital`);
-    if (timbreNode === undefined) {
-      return null;
-    }
-    const { uuid, fechaSellado } = obtainTimbreNodeData(timbreNode);
 
     const invoice = await Invoice.create({
       rfcEmisor,
@@ -142,6 +144,14 @@ export default class Invoice extends BaseModel {
       return invoice;
     }
     await invoice.createConcepts(conceptsNode, ns.cfdiNs);
+
+    if (ns.pagosNs !== null) {
+      const paymentsNode = complementNode?.searchNode(`${ns.pagosNs}:Pagos`);
+      if (paymentsNode !== undefined) {
+        const totalsNode = paymentsNode.searchNode(`${ns.pagosNs}:Totales`);
+        await PaymentTotal.create({invoiceId: invoice.id, ...obtainPaymentTotalsNodeData(totalsNode!)});
+      }
+    }
 
     return invoice;
   }

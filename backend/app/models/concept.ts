@@ -4,7 +4,7 @@ import { XmlNodeInterface } from '@nodecfdi/cfdi-core/types';
 import { DateTime } from 'luxon';
 import Invoice from '#models/invoice';
 import Tax from '#models/tax';
-import { obtainTaxOrWithholdingNodeData } from './helpers/node_to:values.js';
+import { obtainTaxOrWithholdingNodeData } from './helpers/node_to_values.js';
 
 export default class Concept extends BaseModel {
   @column({ isPrimary: true })

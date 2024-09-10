@@ -5,6 +5,7 @@ import cfdiNs from '../../constants/cfdi_ns.js';
 export type NsNames = {
   cfdiNs: string | null;
   tfdNs: string | null;
+  pagosNs: string |null;
 };
 
 export const obtainIssuerNodeData = (node: XmlNodeInterface): { rfcEmisor: string; nombreEmisor: string } => {
@@ -139,9 +140,52 @@ export const obtainTaxOrWithholdingNodeData = (
   };
 };
 
+export const obtainPaymentTotalsNodeData = (
+  node: XmlNodeInterface,
+): {
+  totalRetencionesIva: number;
+  totalRetencionesIsr: number;
+  totalRetencionesIeps: number;
+  totalTrasladosBaseIva16: number;
+  totalTrasladosImpuestoIva16: number;
+  totalTrasladosBaseIva8: number;
+  totalTrasladosImpuestoIva8: number;
+  totalTrasladosBaseIva0: number;
+  totalTrasladosImpuestoIva0: number;
+  totalTrasladosBaseIvaExento: number;
+  montoTotalPagos: number;
+} => {
+  const totalRetencionesIva = Number(node.getAttribute('TotalRetencionesIVA'));
+  const totalRetencionesIsr = Number(node.getAttribute('TotalRetencionesISR'));
+  const totalRetencionesIeps = Number(node.getAttribute('TotalRetencionesIEPS'));
+  const totalTrasladosBaseIva16 = Number(node.getAttribute('TotalTrasladosBaseIVA16'));
+  const totalTrasladosImpuestoIva16 = Number(node.getAttribute('TotalTrasladosImpuestoIVA16'));
+  const totalTrasladosBaseIva8 = Number(node.getAttribute('TotalTrasladosBaseIVA8'));
+  const totalTrasladosImpuestoIva8 = Number(node.getAttribute('TotalTrasladosImpuestoIVA8'));
+  const totalTrasladosBaseIva0 = Number(node.getAttribute('TotalTrasladosBaseIVA0'));
+  const totalTrasladosImpuestoIva0 = Number(node.getAttribute('TotalTrasladosImpuestoIVA0'));
+  const totalTrasladosBaseIvaExento = Number(node.getAttribute('TotalTrasladosBaseIVAExento'));
+  const montoTotalPagos = Number(node.getAttribute('MontoTotalPagos'));
+
+  return {
+    totalRetencionesIva,
+    totalRetencionesIsr,
+    totalRetencionesIeps,
+    totalTrasladosBaseIva16,
+    totalTrasladosImpuestoIva16,
+    totalTrasladosBaseIva8,
+    totalTrasladosImpuestoIva8,
+    totalTrasladosBaseIva0,
+    totalTrasladosImpuestoIva0,
+    totalTrasladosBaseIvaExento,
+    montoTotalPagos
+  };
+};
+
 export const getNsValues = (node: XmlNodeInterface): NsNames => {
   let ns0 = null;
   let ns1 = null;
+  let ns2 = null;
   for (const entry of node.attributes().entries()) {
     if (ns0 === null) {
       ns0 = entry[1] === cfdiNs.cfdi ? entry[0] : null;
@@ -149,15 +193,22 @@ export const getNsValues = (node: XmlNodeInterface): NsNames => {
     if (ns1 === null) {
       ns1 = entry[1] === cfdiNs.tfd ? entry[0] : null;
     }
+    if (ns2 === null) {
+      ns2 = entry[1] === cfdiNs.pagos ? entry[0] : null;
+    }
     if (ns0 !== null && ns1 !== null) {
       ns0 = ns0.split(':')[1];
       ns1 = ns1.split(':')[1];
       break;
     }
   }
+  if(ns2 !== null) {
+    ns2 = ns2.split(':')[1];
+  }
 
   return {
     cfdiNs: ns0,
     tfdNs: ns1,
+    pagosNs: ns2,
   };
 };

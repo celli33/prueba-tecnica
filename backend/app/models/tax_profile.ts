@@ -1,5 +1,7 @@
-import { BaseModel, column } from '@adonisjs/lucid/orm';
+import { BaseModel, column, hasMany } from '@adonisjs/lucid/orm';
+import { type HasMany } from '@adonisjs/lucid/types/relations';
 import { DateTime } from 'luxon';
+import Invoice from './invoice.js';
 
 export default class TaxProfile extends BaseModel {
   @column({ isPrimary: true })
@@ -19,4 +21,7 @@ export default class TaxProfile extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   public declare updatedAt: DateTime;
+
+  @hasMany(() => Invoice)
+  public declare invoices: HasMany<typeof Invoice>;
 }

@@ -1,4 +1,5 @@
 import factory from '@adonisjs/lucid/factories';
+import { InvoiceFactory } from '#database/factories/invoice_factory';
 import TaxProfile from '#models/tax_profile';
 import cfdi40RegimenesFiscales from '../../app/constants/cfdi40_regimenes_fiscales.js';
 
@@ -10,4 +11,5 @@ export const TaxProfileFactory = factory
       taxRegimeCode: faker.helpers.arrayElement(cfdi40RegimenesFiscales.map((item) => item.id)),
     };
   })
+  .relation('invoices', () => InvoiceFactory)
   .build();

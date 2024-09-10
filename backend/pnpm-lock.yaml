@@ -34,6 +34,15 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.645.0
         version: 3.645.0
+      '@nodecfdi/cfdi-cleaner':
+        specifier: ^2.0.1
+        version: 2.0.1(@nodecfdi/cfdi-core@0.5.1)
+      '@nodecfdi/cfdi-core':
+        specifier: ^0.5.1
+        version: 0.5.1
+      '@nodecfdi/cfdi-to-json':
+        specifier: ^1.2.3
+        version: 1.2.3
       '@vinejs/vine':
         specifier: ^2.1.0
         version: 2.1.0
@@ -762,6 +771,28 @@ packages:
       { integrity: sha512-1j6kQFb7QRru7eKN3ZDvRcP13rugwdxZqCjbiAVZfIJwgj2A65UmT4TgARXGlXgnRkORLTDTrO19ZErt7+QXgA== }
     engines: { node: ^14.21.3 || >=16 }
 
+  '@nodecfdi/cfdi-cleaner@2.0.1':
+    resolution:
+      { integrity: sha512-HKVQzXSuBooIpvnshND9ZH3HUSJN+tDrplMtAObgR/6RXzJoEfEbZ6fSOZVI5Jh+bdh2LNuNlgeKx0R+FOTf6g== }
+    engines: { node: ^21 || ^20 || ^19 || ^18 || ^16 }
+    peerDependencies:
+      '@nodecfdi/cfdi-core': ^0.1.0
+
+  '@nodecfdi/cfdi-core@0.5.1':
+    resolution:
+      { integrity: sha512-GxlzSVQSKnItkLymicS2i1KPIBkX1frvhy0KQHEnpZRHpi9Lr+KcOMnD5SivSjO+52o7lsZLNty25EmSTOT4+g== }
+    engines: { node: '>=18 <=22 || ^16' }
+
+  '@nodecfdi/cfdi-to-json@1.2.3':
+    resolution:
+      { integrity: sha512-LhWw6XbZ1Pz9SXU6jDTAda98IlgANBnrX7TZzRrGppgDLfXIcQhR/iPvzXZMpetdh26Jr4Q6LKTiCCZwBpqJYA== }
+    engines: { node: '>= 16.0.0' }
+
+  '@nodecfdi/cfdiutils-common@1.2.6':
+    resolution:
+      { integrity: sha512-WbO++/hZKmeXnkLOe37G2oxxr0QbIUkxqJi9dBmstFMI6ktD+Uhy1OHH4H5yWmURNZ3PKgzPp5w9SDOTEDhcxA== }
+    engines: { node: '>=16.0.0' }
+
   '@nodecfdi/eslint-config@2.0.2':
     resolution:
       { integrity: sha512-XcNgZ50Q3OjMyt9J36h2oRhOJwE1Gnli36eI3f6BnkxZAPL4KMx9mztONB5FBwoRipI3gxeYwLIwfPK6FqFnIQ== }
@@ -1432,6 +1463,11 @@ packages:
       vitest:
         optional: true
 
+  '@xmldom/xmldom@0.9.0-beta.11':
+    resolution:
+      { integrity: sha512-UJcY9U+YIz5NjvmAZfXFC48+dIvtqguMbbIozsyQCoPBnxizTRRepBeVtiLUJCIDxLkQVQdoFx+gj6vOr8bO+Q== }
+    engines: { node: '>=10.0.0' }
+
   abort-controller@3.0.0:
     resolution:
       { integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg== }
@@ -1657,9 +1693,9 @@ packages:
       { integrity: sha512-8WB3Jcas3swSvjIeA2yvCJ+Miyz5l1ZmB6HFb9R1317dt9LCQoswg/BGrmAmkWVEszSrrg4RwmO46qIm2OEnSA== }
     engines: { node: '>=16' }
 
-  caniuse-lite@1.0.30001659:
+  caniuse-lite@1.0.30001660:
     resolution:
-      { integrity: sha512-Qxxyfv3RdHAfJcXelgf0hU4DFUVXBGTjqrBUZLUh8AtlGnsDo+CnncYtTd95+ZKfnANUOzxyIQCuU/UeBZBYoA== }
+      { integrity: sha512-GacvNTTuATm26qC74pt+ad1fW15mlQ/zuTzzY1ZoIzECTP8HURDfF43kNxPgf7H1jmelCBQTTbBNxdSXOA7Bqg== }
 
   case-anything@2.1.13:
     resolution:
@@ -4129,6 +4165,10 @@ packages:
     peerDependencies:
       typescript: '>=4.2.0'
 
+  ts-mixer@6.0.4:
+    resolution:
+      { integrity: sha512-ufKpbmrugz5Aou4wcr5Wc1UUFWOLhq+Fm6qa6P0w0K5Qw2yhaUoiWszhCVuNQyNwrlGiscHOmqYoAox1PtvgjA== }
+
   ts-morph@23.0.0:
     resolution:
       { integrity: sha512-FcvFx7a9E8TUe6T3ShihXJLiJOiqyafzFKUO4aqIHDUCIvADdGNShcbc2W5PMr3LerXRv7mafvFZ9lRENxJmug== }
@@ -4355,6 +4395,11 @@ packages:
     resolution:
       { integrity: sha512-ICP2e+jsHvAj2E2lIHxa5tjXRlKDJo4IdvPvCXbXQGdzSfmSpNVyIKMvoZHjDY9DP0zV17iI85o90vRFXNccRw== }
     engines: { node: '>=12' }
+
+  xpath@0.0.34:
+    resolution:
+      { integrity: sha512-FxF6+rkr1rNSQrhUNYrAFJpRXNzlDoMxeXN5qI84939ylEv3qqPFKa85Oxr6tDaJKqwW6KKyo2v26TSv3k6LeA== }
+    engines: { node: '>=0.6.0' }
 
   xtend@4.0.2:
     resolution:
@@ -5382,6 +5427,23 @@ snapshots:
 
   '@noble/hashes@1.5.0': {}
 
+  '@nodecfdi/cfdi-cleaner@2.0.1(@nodecfdi/cfdi-core@0.5.1)':
+    dependencies:
+      '@nodecfdi/cfdi-core': 0.5.1
+      ts-mixer: 6.0.4
+      xpath: 0.0.34
+
+  '@nodecfdi/cfdi-core@0.5.1':
+    dependencies:
+      '@xmldom/xmldom': 0.9.0-beta.11
+      lodash.isequal: 4.5.0
+
+  '@nodecfdi/cfdi-to-json@1.2.3':
+    dependencies:
+      '@nodecfdi/cfdiutils-common': 1.2.6
+
+  '@nodecfdi/cfdiutils-common@1.2.6': {}
+
   '@nodecfdi/eslint-config@2.0.2(@typescript-eslint/parser@8.5.0(eslint@9.10.0)(typescript@5.5.4))(@typescript-eslint/utils@8.5.0(eslint@9.10.0)(typescript@5.5.4))(eslint@9.10.0)(typescript@5.5.4)':
     dependencies:
       '@adonisjs/eslint-plugin': 2.0.0-beta.5(eslint@9.10.0)(typescript@5.5.4)
@@ -6084,6 +6146,8 @@ snapshots:
       '@typescript-eslint/utils': 8.5.0(eslint@9.10.0)(typescript@5.5.4)
       typescript: 5.5.4
 
+  '@xmldom/xmldom@0.9.0-beta.11': {}
+
   abort-controller@3.0.0:
     dependencies:
       event-target-shim: 5.0.1
@@ -6241,7 +6305,7 @@ snapshots:
 
   browserslist@4.23.3:
     dependencies:
-      caniuse-lite: 1.0.30001659
+      caniuse-lite: 1.0.30001660
       electron-to-chromium: 1.5.18
       node-releases: 2.0.18
       update-browserslist-db: 1.1.0(browserslist@4.23.3)
@@ -6269,7 +6333,7 @@ snapshots:
 
   camelcase@8.0.0: {}
 
-  caniuse-lite@1.0.30001659: {}
+  caniuse-lite@1.0.30001660: {}
 
   case-anything@2.1.13: {}
 
@@ -8226,6 +8290,8 @@ snapshots:
     dependencies:
       typescript: 5.5.4
 
+  ts-mixer@6.0.4: {}
+
   ts-morph@23.0.0:
     dependencies:
       '@ts-morph/common': 0.24.0
@@ -8432,6 +8498,8 @@ snapshots:
   wrappy@1.0.2: {}
 
   xml-name-validator@4.0.0: {}
+
+  xpath@0.0.34: {}
 
   xtend@4.0.2: {}
 

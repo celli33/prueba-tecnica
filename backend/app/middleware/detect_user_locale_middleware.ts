@@ -1,5 +1,5 @@
 import { type HttpContext, RequestValidator } from '@adonisjs/core/http';
-import  { type NextFn } from '@adonisjs/core/types/http';
+import { type NextFn } from '@adonisjs/core/types/http';
 import { I18n } from '@adonisjs/i18n';
 import i18nManager from '@adonisjs/i18n/services/main';
 

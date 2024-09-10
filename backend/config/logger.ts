@@ -2,6 +2,8 @@ import { defineConfig, targets } from '@adonisjs/core/logger';
 import app from '@adonisjs/core/services/app';
 import env from '#start/env';
 
+export const logPath = env.get('LOG_PATH');
+
 const loggerConfig = defineConfig({
   default: 'app',
 
@@ -16,8 +18,23 @@ const loggerConfig = defineConfig({
       level: env.get('LOG_LEVEL'),
       transport: {
         targets: targets()
-          .pushIf(!app.inProduction, targets.pretty())
-          .pushIf(app.inProduction, targets.file({ destination: 1 }))
+          .pushIf(!app.inProduction, {
+            target: 'pino-roll',
+            level: env.get('LOG_LEVEL'),
+            options: {
+              file: logPath,
+              frequency: 'daily',
+              mkdir: true,
+            },
+          })
+          .pushIf(app.inProduction, {
+            target: 'pino-roll',
+            options: {
+              file: logPath,
+              frequency: 'daily',
+              mkdir: true,
+            },
+          })
           .toArray(),
       },
     },

@@ -18,9 +18,11 @@ test.group('Create token', (group) => {
       .accept('json');
 
     response.assertStatus(201);
-    response.assertBodyContains({data: {
-      type: 'bearer',
-    }});
+    response.assertBodyContains({
+      data: {
+        type: 'bearer',
+      },
+    });
   });
 
   test('empty request', async ({ client, route }) => {

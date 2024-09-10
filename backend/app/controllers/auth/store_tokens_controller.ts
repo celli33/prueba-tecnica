@@ -8,9 +8,13 @@ export default class StoreTokenController {
     const user = await User.verifyCredentials(payload.email, payload.password);
     const token = await User.accessTokens.create(user);
 
-    response.sendResponse({
-      type: 'bearer',
-      value: token.value!.release(),
-    }, 'Token creado.', 201);
+    response.sendResponse(
+      {
+        type: 'bearer',
+        value: token.value!.release(),
+      },
+      'Token creado.',
+      201,
+    );
   }
 }

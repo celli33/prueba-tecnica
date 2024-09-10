@@ -1,7 +1,6 @@
-import type { HttpContext } from '@adonisjs/core/http';
-
-import { storeTaxProfilenValidator } from '#validators/tax_profiles/store_tax_profile';
+import { type HttpContext } from '@adonisjs/core/http';
 import TaxProfile from '#models/tax_profile';
+import { storeTaxProfilenValidator } from '#validators/tax_profiles/store_tax_profile';
 
 export default class StoreTaxProfileController {
   public async handle({ request, response }: HttpContext): Promise<void> {

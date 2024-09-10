@@ -1,6 +1,6 @@
 import factory from '@adonisjs/lucid/factories';
 import TaxProfile from '#models/tax_profile';
-import cfdi40RegimenesFiscales from '../../app/constants/cfdi40RegimenesFiscales.js';
+import cfdi40RegimenesFiscales from '../../app/constants/cfdi40_regimenes_fiscales.js';
 
 export const TaxProfileFactory = factory
   .define(TaxProfile, async ({ faker }) => {

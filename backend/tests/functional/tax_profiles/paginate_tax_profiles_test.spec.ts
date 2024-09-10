@@ -1,8 +1,8 @@
+import testUtils from '@adonisjs/core/services/test_utils';
+import { test } from '@japa/runner';
 import { TaxProfileFactory } from '#database/factories/tax_profile_factory';
 import { UserFactory } from '#database/factories/user_factory';
 import TaxProfile from '#models/tax_profile';
-import testUtils from '@adonisjs/core/services/test_utils';
-import { test } from '@japa/runner';
 
 test.group('paginate tax profiles test', (group) => {
   const endpoint = 'api.perfiles.index';
@@ -21,9 +21,10 @@ test.group('paginate tax profiles test', (group) => {
       .accept('json')
       .loginAs(user);
 
+    const expectedTaxProfile = await TaxProfile.firstOrFail();
     response.assertBodyContains({
       data: {
-        data: [(await TaxProfile.firstOrFail()).serialize()],
+        data: [expectedTaxProfile.serialize()],
       },
     });
   });

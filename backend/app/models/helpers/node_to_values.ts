@@ -5,7 +5,7 @@ import cfdiNs from '../../constants/cfdi_ns.js';
 export type NsNames = {
   cfdiNs: string | null;
   tfdNs: string | null;
-  pagosNs: string |null;
+  pagosNs: string | null;
 };
 
 export const obtainIssuerNodeData = (node: XmlNodeInterface): { rfcEmisor: string; nombreEmisor: string } => {
@@ -178,7 +178,7 @@ export const obtainPaymentTotalsNodeData = (
     totalTrasladosBaseIva0,
     totalTrasladosImpuestoIva0,
     totalTrasladosBaseIvaExento,
-    montoTotalPagos
+    montoTotalPagos,
   };
 };
 
@@ -202,7 +202,7 @@ export const getNsValues = (node: XmlNodeInterface): NsNames => {
       break;
     }
   }
-  if(ns2 !== null) {
+  if (ns2 !== null) {
     ns2 = ns2.split(':')[1];
   }
 

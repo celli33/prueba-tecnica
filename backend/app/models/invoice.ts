@@ -149,7 +149,7 @@ export default class Invoice extends BaseModel {
       const paymentsNode = complementNode?.searchNode(`${ns.pagosNs}:Pagos`);
       if (paymentsNode !== undefined) {
         const totalsNode = paymentsNode.searchNode(`${ns.pagosNs}:Totales`);
-        await PaymentTotal.create({invoiceId: invoice.id, ...obtainPaymentTotalsNodeData(totalsNode!)});
+        await PaymentTotal.create({ invoiceId: invoice.id, ...obtainPaymentTotalsNodeData(totalsNode!) });
       }
     }
 

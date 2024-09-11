@@ -5,7 +5,7 @@ const ImportInvoicesController = () => import('#controllers/invoices/import_invo
 
 const invoices = (): void => {
   router.post('facturas', [ImportInvoicesController]).as('facturas.store');
-  router.post('iva-calculo', [CalculateIvaTaxesController]).as('iva-calculo');
+  router.post('iva-calculo/:taxProfileId', [CalculateIvaTaxesController]).as('iva-calculo');
 };
 
 export default invoices;

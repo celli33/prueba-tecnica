@@ -2,10 +2,10 @@ import testUtils from '@adonisjs/core/services/test_utils';
 import { test } from '@japa/runner';
 import { TaxProfileFactory } from '#database/factories/tax_profile_factory';
 import { UserFactory } from '#database/factories/user_factory';
-import Invoice from '#models/invoice';
-import { filePath } from '#tests/test_utils';
 import Concept from '#models/concept';
+import Invoice from '#models/invoice';
 import Tax from '#models/tax';
+import { filePath } from '#tests/test_utils';
 
 test.group('import invoices test', (group) => {
   const endpoint = 'api.facturas.store';
@@ -24,38 +24,37 @@ test.group('import invoices test', (group) => {
       .accept('json');
 
     response.assertStatus(201);
-    // const invoices = await Invoice.query()
-    //   .where('rfc_emisor', 'MUEE830628HDF')
-    //   .preload('invoices', (q) => {
-    //     void q.preload('taxes', (qu) => {
-    //       void qu.where('tipo_impuesto', 'traslado');
-    //     });
-    //   });
-    // let trasladosValue = 0;
-    // invoices.map((invoice) =>
-    //   invoice.invoices.map((concepts) =>
-    //     concepts.taxes.map((tax) => {
-    //       trasladosValue += tax.importe;
+    const invoiceIssued = await Invoice.query()
+      .select('id')
+      .where('tipoComprobante', 'I')
+      .where('rfc_emisor', 'MUEE830628HDF');
+    const itemIIds = invoiceIssued.map((item) => item.id);
+    const conceptsI = await Concept.query().whereIn('invoice_id', itemIIds);
+    const conceptsIIds = conceptsI.map((item) => item.id);
+    const taxesI = await Tax.query()
+      .where('tipo_impuesto', 'traslado')
+      .where('impuesto', '002')
+      .whereIn('concept_id', conceptsIIds);
+    const taxesISum = taxesI.reduce((sum, current) => sum + current.importe, 0);
+    const taxesWithholdingI = await Tax.query()
+      .where('tipo_impuesto', 'retencion')
+      .where('impuesto', '002')
+      .whereIn('concept_id', conceptsIIds);
+    const taxesWithholdingsSumI = taxesWithholdingI.reduce((sum, current) => sum + current.importe, 0);
+    const taxesissuedSum = taxesISum - taxesWithholdingsSumI;
+    assert.equal(419.2199999999999, taxesissuedSum);
 
-    //       return trasladosValue;
-    //     }),
-    //   ),
-    // );
-    // console.log(trasladosValue);
-    const invoice = await Invoice.query()
-    .select('id')
-       .where('rfc_emisor', 'MUEE830628HDF');
-    const itemIds = invoice.map(item => item.id);
-    const concepts = await Concept.query().whereIn('invoice_id', itemIds);
-    const conceptsIds = concepts.map(item => item.id);
-    const taxes = await Tax.query().where('tipo_impuesto', 'traslado').whereIn('concept_id', conceptsIds);
-    const taxesSum = taxes.reduce((sum, current) => sum + current.importe, 0);
-
-    const taxesWithholding = await Tax.query().where('tipo_impuesto', 'retencion').whereIn('concept_id', conceptsIds);
-    const taxesSum = taxes.reduce((sum, current) => sum + current.importe, 0);
-    
-
-
-    // assert.equal(39, invoices.length);
+    const invoiceReceived = await Invoice.query()
+      .select('id')
+      .where('tipoComprobante', 'I')
+      .where('rfc_receptor', 'MUEE830628HDF');
+    const itemRIds = invoiceReceived.map((item) => item.id);
+    const conceptsR = await Concept.query().whereIn('invoice_id', itemRIds);
+    const conceptsRIds = conceptsR.map((item) => item.id);
+    const taxesR = await Tax.query()
+      .where('impuesto', '002')
+      .whereIn('concept_id', conceptsRIds);
+    const taxesRSum = taxesR.reduce((sum, current) => sum + current.importe, 0);
+    assert.equal(10889.252830000005, taxesRSum);
   });
 });

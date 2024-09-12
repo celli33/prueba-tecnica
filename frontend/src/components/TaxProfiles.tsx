@@ -6,10 +6,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store/store.js';
 import { fetchTaxProfiles, setCurrentPage } from '../store/itemsSlice.js';
 import Pagination from './Pagination.js';
+import TaxProfile from '../interfaces/TaxProfile.js';
+import TaxProfileModalDetails from './TaxProfileModalDetails.js';
 
 const TaxProfiles: React.FC = () => {
   const [isTaxProfileModalOpen, setIsTaxProfileModalOpen] = useState(false);
   const [isFileUploaderModalOpen, setIsFileUploaderModalOpen] = useState(false);
+  const [isTaxProfileDetailsModalOpen, setIsTaxProfileDetailsModalOpen] = useState(false);
+  const [itemToShow, setItemToShow] = useState<TaxProfile | null>(null);
 
   const [notification, setNotification] = useState<{
     message: string;
@@ -22,13 +26,17 @@ const TaxProfiles: React.FC = () => {
     dispatch(fetchTaxProfiles(currentPage));
   }, [dispatch, currentPage]);
 
-
   const openTaxProfileModalOpen = () => setIsTaxProfileModalOpen(true);
   const openFileUploaderModal = () => setIsFileUploaderModalOpen(true);
+  const openDetails = (item: TaxProfile): void => {
+    setItemToShow(item);
+    setIsTaxProfileDetailsModalOpen(true);
+  };
 
   const closeModals = () => {
     setIsTaxProfileModalOpen(false);
     setIsFileUploaderModalOpen(false);
+    setIsTaxProfileDetailsModalOpen(false);
   };
 
   const handleSuccess = (message: string) => {
@@ -69,43 +77,49 @@ const TaxProfiles: React.FC = () => {
           </div>
         </div>
       </div>
-      {loading ? <p>Cargando...</p> : error ? <p>Error {error}</p> : <div>
-      <table className="min-w-full bg-white border border-gray-300">
-              <thead>
-                <tr>
-                  <th className="py-2 px-4 border-b">Name</th>
-                  <th className="py-2 px-4 border-b">RFC</th>
-                  <th className="py-2 px-4 border-b">Regimen fiscal</th>
-                  <th className="py-2 px-4 border-b">Acciones</th>
+      {loading ? (
+        <p>Cargando...</p>
+      ) : error ? (
+        <p>Error {error}</p>
+      ) : (
+        <div>
+          <table className="min-w-full bg-white border border-gray-300">
+            <thead>
+              <tr>
+                <th className="py-2 px-4 border-b">Name</th>
+                <th className="py-2 px-4 border-b">RFC</th>
+                <th className="py-2 px-4 border-b">Regimen fiscal</th>
+                <th className="py-2 px-4 border-b">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item) => (
+                <tr key={item.id}>
+                  <td className="py-2 px-4 border-b">{item.name}</td>
+                  <td className="py-2 px-4 border-b">{item.rfc}</td>
+                  <td className="py-2 px-4 border-b">{item.taxRegimeCode}</td>
+                  <td className="py-2 px-4 border-b">
+                    <button
+                      className="px-3 py-2 text-xs font-medium text-center text-blue-700 cursor-pointer"
+                      onClick={() => openDetails(item)}
+                    >
+                      Ver detalles
+                    </button>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {items.map((item) => (
-                  <tr key={item.id}>
-                    <td className="py-2 px-4 border-b">{item.name}</td>
-                    <td className="py-2 px-4 border-b">{item.rfc}</td>
-                    <td className="py-2 px-4 border-b">{item.taxRegimeCode}</td>
-                    <td className="py-2 px-4 border-b">
-                      <button
+              ))}
+            </tbody>
+          </table>
 
-                        className="px-3 py-2 text-xs font-medium text-center text-blue-700 cursor-pointer"
-                      >
-                        Ver detalles
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            <div className="mt-4 flex justify-center">
-              <Pagination
-                totalPages={lastPage}
-                currentPage={currentPage}
-                paginate={handlePageChange}
-              />
-            </div>
-      </div>}
+          <div className="mt-4 flex justify-center">
+            <Pagination
+              totalPages={lastPage}
+              currentPage={currentPage}
+              paginate={handlePageChange}
+            />
+          </div>
+        </div>
+      )}
 
       <TaxProfileModalForm
         isOpen={isTaxProfileModalOpen}
@@ -113,6 +127,11 @@ const TaxProfiles: React.FC = () => {
         onSuccess={handleSuccess}
         onError={handleError}
       ></TaxProfileModalForm>
+      <TaxProfileModalDetails
+        isOpen={isTaxProfileDetailsModalOpen}
+        profileDetails={itemToShow}
+        onClose={closeModals}
+      ></TaxProfileModalDetails>
       <ZipFileUploaderModal
         isOpen={isFileUploaderModalOpen}
         onClose={closeModals}

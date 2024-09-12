@@ -36,14 +36,14 @@ export const fetchTaxProfiles = createAsyncThunk(
   },
 );
 
-export const addProfile = createAsyncThunk('items/addTaxProfile', async (formData: TaxProfile, {rejectWithValue}) => {
+export const addProfile = createAsyncThunk('items/addTaxProfile', async (formData: TaxProfile, { rejectWithValue }) => {
   try {
     const { data } = await axiosInstance.post('perfiles', formData);
     return data.data;
   } catch (error) {
-    if((error as AxiosError ).isAxiosError){
+    if ((error as AxiosError).isAxiosError) {
       const axError = error as AxiosError;
-      const errors = axError.response?.data as {errors: Error422[]};
+      const errors = axError.response?.data as { errors: Error422[] };
       return rejectWithValue(errors.errors[0].message);
     }
     return rejectWithValue('Error al cargar perfiles.');
@@ -80,19 +80,20 @@ const itemsSlice = createSlice({
       .addCase(fetchTaxProfiles.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-      }).addCase(addProfile.pending, (state) => {
+      })
+      .addCase(addProfile.pending, (state) => {
         state.loading = true;
       })
       .addCase(addProfile.fulfilled, (state, action: PayloadAction<TaxProfile>) => {
         state.items.push(action.payload);
         state.totalItems += 1;
-        state.loading = false; 
+        state.loading = false;
         state.error = null;
       })
       .addCase(addProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
-      })
+      });
   },
 });
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface PaginationProps {
   totalPages: number;
@@ -6,11 +6,7 @@ interface PaginationProps {
   paginate: (pageNumber: number) => void;
 }
 
-const Pagination: React.FC<PaginationProps> = ({
-  totalPages,
-  currentPage,
-  paginate,
-}) => {
+const Pagination: React.FC<PaginationProps> = ({ totalPages, currentPage, paginate }) => {
   const pageNumbers = [];
 
   for (let i = 1; i <= totalPages; i++) {
@@ -23,7 +19,7 @@ const Pagination: React.FC<PaginationProps> = ({
         {pageNumbers.map((number) => (
           <li
             key={number}
-            className={`mx-1 ${currentPage === number ? "font-bold" : ""}`}
+            className={`mx-1 ${currentPage === number ? 'font-bold' : ''}`}
           >
             <button
               onClick={() => paginate(number)}

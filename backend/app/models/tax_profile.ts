@@ -31,6 +31,9 @@ export default class TaxProfile extends BaseModel {
   public async sumIvaAsIssuer(from: DateTime, to: DateTime): Promise<number> {
     const invoices = await Invoice.query()
       .select('id', 'fecha')
+      .where('tipoComprobante', 'I')
+      .where('metodo_pago', 'PUE')
+      .where('rfc_emisor', this.rfc)
       .whereBetween('fecha', [from.toFormat('yyyy-MM-dd HH:mm:ss'), to.toFormat('yyyy-MM-dd HH:mm:ss')]);
 
     const invoicesIds = invoices.map((item) => item.id);

@@ -18,7 +18,9 @@
     "@nodecfdi/prettier-config": "^1.2.0",
     "@reduxjs/toolkit": "^2.2.7",
     "axios": "^1.7.7",
+    "date-fns": "^3.6.0",
     "react": "^18.3.1",
+    "react-datepicker": "^7.3.0",
     "react-dom": "^18.3.1",
     "react-redux": "^9.1.2"
   },
@@ -41,6 +43,10 @@
     "tailwindcss": "^3.4.11",
     "typescript": "^5.6.2",
     "vite": "^5.4.4"
+  },
+  "resolutions": {
+    "@types/react": "^18.3.5",
+    "@types/react-dom": "^18.3.0"
   },
   "packageManager": "pnpm@9.10.0+sha1.1b1fac50a1a7e3bcdd6c5686e9eaeaa27c8ec35e"
 }

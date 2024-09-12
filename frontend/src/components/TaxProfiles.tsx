@@ -8,12 +8,15 @@ import { fetchTaxProfiles, setCurrentPage } from '../store/itemsSlice.js';
 import Pagination from './Pagination.js';
 import TaxProfile from '../interfaces/TaxProfile.js';
 import TaxProfileModalDetails from './TaxProfileModalDetails.js';
+import MonthPickerModal from './MonthPickerModal.js';
 
 const TaxProfiles: React.FC = () => {
   const [isTaxProfileModalOpen, setIsTaxProfileModalOpen] = useState(false);
   const [isFileUploaderModalOpen, setIsFileUploaderModalOpen] = useState(false);
   const [isTaxProfileDetailsModalOpen, setIsTaxProfileDetailsModalOpen] = useState(false);
   const [itemToShow, setItemToShow] = useState<TaxProfile | null>(null);
+  const [isDatePickerModalOpen, setIsDatePickerModalOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
   const [notification, setNotification] = useState<{
     message: string;
@@ -32,11 +35,16 @@ const TaxProfiles: React.FC = () => {
     setItemToShow(item);
     setIsTaxProfileDetailsModalOpen(true);
   };
+  const openDatePickerModal = (id: number) => {
+    setIsDatePickerModalOpen(true);
+    setSelectedId(id);
+  };
 
   const closeModals = () => {
     setIsTaxProfileModalOpen(false);
     setIsFileUploaderModalOpen(false);
     setIsTaxProfileDetailsModalOpen(false);
+    setIsDatePickerModalOpen(false);
   };
 
   const handleSuccess = (message: string) => {
@@ -105,6 +113,12 @@ const TaxProfiles: React.FC = () => {
                     >
                       Ver detalles
                     </button>
+                    <button
+                      className="px-3 py-2 text-xs font-medium text-center text-blue-700 cursor-pointer"
+                      onClick={() => openDatePickerModal(item.id!)}
+                    >
+                      Obtener IVA por mes
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -138,6 +152,13 @@ const TaxProfiles: React.FC = () => {
         onSuccess={handleSuccess}
         onError={handleError}
       ></ZipFileUploaderModal>
+      <MonthPickerModal
+        isOpen={isDatePickerModalOpen}
+        id={selectedId}
+        onClose={closeModals}
+        onSuccess={handleSuccess}
+        onError={handleError}
+      />
       {notification && (
         <Notification
           message={notification.message}

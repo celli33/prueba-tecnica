@@ -75,6 +75,7 @@ const itemsSlice = createSlice({
       })
       .addCase(fetchTaxProfiles.fulfilled, (state, action: PayloadAction<{ data: TaxProfile[] }>) => {
         state.items = action.payload.data;
+        state.loading = false;
       })
       .addCase(fetchTaxProfiles.rejected, (state, action) => {
         state.loading = false;

@@ -1,7 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TaxProfileModalForm from './TaxProfileModalForm.js';
 import Notification from './Notification.js';
 import ZipFileUploaderModal from './ZipFileUploaderModal.js';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../store/store.js';
+import { fetchTaxProfiles, setCurrentPage } from '../store/itemsSlice.js';
+import Pagination from './Pagination.js';
 
 const TaxProfiles: React.FC = () => {
   const [isTaxProfileModalOpen, setIsTaxProfileModalOpen] = useState(false);
@@ -11,6 +15,13 @@ const TaxProfiles: React.FC = () => {
     message: string;
     success: boolean;
   } | null>(null);
+
+  const { items, currentPage, lastPage, loading, error } = useSelector((state: RootState) => state.items);
+  const dispatch = useDispatch<AppDispatch>();
+  useEffect(() => {
+    dispatch(fetchTaxProfiles(currentPage));
+  }, [dispatch, currentPage]);
+
 
   const openTaxProfileModalOpen = () => setIsTaxProfileModalOpen(true);
   const openFileUploaderModal = () => setIsFileUploaderModalOpen(true);
@@ -30,6 +41,10 @@ const TaxProfiles: React.FC = () => {
 
   const handleCloseNotification = () => {
     setNotification(null);
+  };
+
+  const handlePageChange = (page: number) => {
+    dispatch(setCurrentPage(page));
   };
 
   return (
@@ -54,6 +69,43 @@ const TaxProfiles: React.FC = () => {
           </div>
         </div>
       </div>
+      {loading ? <p>Cargando...</p> : error ? <p>Error {error}</p> : <div>
+      <table className="min-w-full bg-white border border-gray-300">
+              <thead>
+                <tr>
+                  <th className="py-2 px-4 border-b">Name</th>
+                  <th className="py-2 px-4 border-b">RFC</th>
+                  <th className="py-2 px-4 border-b">Regimen fiscal</th>
+                  <th className="py-2 px-4 border-b">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((item) => (
+                  <tr key={item.id}>
+                    <td className="py-2 px-4 border-b">{item.name}</td>
+                    <td className="py-2 px-4 border-b">{item.rfc}</td>
+                    <td className="py-2 px-4 border-b">{item.taxRegimeCode}</td>
+                    <td className="py-2 px-4 border-b">
+                      <button
+
+                        className="px-3 py-2 text-xs font-medium text-center text-blue-700 cursor-pointer"
+                      >
+                        Ver detalles
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <div className="mt-4 flex justify-center">
+              <Pagination
+                totalPages={lastPage}
+                currentPage={currentPage}
+                paginate={handlePageChange}
+              />
+            </div>
+      </div>}
 
       <TaxProfileModalForm
         isOpen={isTaxProfileModalOpen}

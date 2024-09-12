@@ -1,13 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import cfdi40RegimenesFiscales from '../utils/taxRegimes.js';
 import { useDispatch } from 'react-redux';
-import TaxProfile from '../interfaces/TaxProfile.js';
 import { addProfile } from '../store/itemsSlice.js';
-import store from '../store/store.js';
-import { AxiosError } from 'axios';
-import Error422 from '../interfaces/Error422.js';
-
-export type AppDispatch = typeof store.dispatch;
+import { AppDispatch } from '../store/store.js';
 
 const TaxProfileModalForm: React.FC<{
   isOpen: boolean;

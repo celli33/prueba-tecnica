@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import TaxProfileModalForm from './TaxProfileModalForm.js';
 import Notification from './Notification.js';
+import ZipFileUploaderModal from './ZipFileUploaderModal.js';
 
 const TaxProfiles: React.FC = () => {
   const [isTaxProfileModalOpen, setIsTaxProfileModalOpen] = useState(false);
+  const [isFileUploaderModalOpen, setIsFileUploaderModalOpen] = useState(false);
 
   const [notification, setNotification] = useState<{
     message: string;
@@ -11,9 +13,11 @@ const TaxProfiles: React.FC = () => {
   } | null>(null);
 
   const openTaxProfileModalOpen = () => setIsTaxProfileModalOpen(true);
+  const openFileUploaderModal = () => setIsFileUploaderModalOpen(true);
 
   const closeModals = () => {
     setIsTaxProfileModalOpen(false);
+    setIsFileUploaderModalOpen(false);
   };
 
   const handleSuccess = (message: string) => {
@@ -41,7 +45,12 @@ const TaxProfiles: React.FC = () => {
               Crear nuevo perfil
             </button>
 
-            <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 ml-3" >Subir archivo</button>
+            <button
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 ml-3"
+              onClick={openFileUploaderModal}
+            >
+              Subir archivo
+            </button>
           </div>
         </div>
       </div>
@@ -52,6 +61,12 @@ const TaxProfiles: React.FC = () => {
         onSuccess={handleSuccess}
         onError={handleError}
       ></TaxProfileModalForm>
+      <ZipFileUploaderModal
+        isOpen={isFileUploaderModalOpen}
+        onClose={closeModals}
+        onSuccess={handleSuccess}
+        onError={handleError}
+      ></ZipFileUploaderModal>
       {notification && (
         <Notification
           message={notification.message}

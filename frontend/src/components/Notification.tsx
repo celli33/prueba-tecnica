@@ -16,9 +16,7 @@ const Notification: React.FC<{ message: string; success: boolean; duration: numb
 
   return (
     <div
-      className={`fixed top-4 right-4 p-4 rounded-md shadow-lg text-white ${
-        success ? 'bg-green-500' : 'bg-red-500'
-      }`}
+      className={`fixed top-4 right-4 p-4 rounded-md shadow-lg text-white ${success ? 'bg-green-500' : 'bg-red-500'}`}
     >
       <p>{message}</p>
     </div>

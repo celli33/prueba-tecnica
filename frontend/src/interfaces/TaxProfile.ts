@@ -1,4 +1,4 @@
-interface Profile {
+interface TaxProfile {
   id?: number;
   name: string;
   rfc: string;
@@ -9,4 +9,4 @@ interface Profile {
   }[];
 }
 
-export default Profile;
+export default TaxProfile;

@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import cfdi40RegimenesFiscales from '../utils/taxRegimes.js';
-import Profile from '../interfaces/Profile.js';
-import axiosInstance from '../axiosConfig.js';
+import { useDispatch } from 'react-redux';
+import TaxProfile from '../interfaces/TaxProfile.js';
+import { addProfile } from '../store/itemsSlice.js';
+import store from '../store/store.js';
 import { AxiosError } from 'axios';
+import Error422 from '../interfaces/Error422.js';
+
+export type AppDispatch = typeof store.dispatch;
 
 const TaxProfileModalForm: React.FC<{
   isOpen: boolean;
@@ -18,7 +23,9 @@ const TaxProfileModalForm: React.FC<{
     });
   }, []);
 
-  const [formData, setFormData] = useState<Profile>({
+  const dispatch = useDispatch<AppDispatch>();
+
+  const [formData, setFormData] = useState({
     name: '',
     rfc: '',
     taxRegimeCode: '',
@@ -33,13 +40,13 @@ const TaxProfileModalForm: React.FC<{
 
   const handleSubmit = async (element: React.FormEvent) => {
     element.preventDefault();
-    try {
-      const { data } = await axiosInstance.post('perfiles', formData);
 
-      onSuccess('Perfil creado con éxito.');
+    try {
+      await dispatch(addProfile(formData)).unwrap();
+      onSuccess('Perfil creado exitosamente.');
       onClose();
-    } catch (error: unknown) {
-      onError((error as AxiosError).response?.data?.errors?.[0]?.message ?? 'Error inesperado');
+    } catch (error) {
+      onError(error as string);
     }
   };
 
